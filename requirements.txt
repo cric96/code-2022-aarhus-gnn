@@ -1,3 +1,8 @@
 pytorch-lightning >= 1.7.7
 torch >= 1.10.2
 torch-geometric-temeporal >= 0.53.0
+jedi~=0.18.1
+numpy~=1.21.5
+torchmetrics~=0.10.0
+setuptools~=65.3.0
+pytest~=7.1.3

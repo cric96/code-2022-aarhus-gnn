@@ -2,7 +2,7 @@ from abc import ABC
 import torch
 from torch.nn import functional as F
 import pytorch_lightning as pl
-
+from project.model.tensor_types import *
 
 class BaseSpatioTemporal(ABC, pl.LightningModule):
     def __init__(self, input_feature_size, output_feature_size, hidden_feature_size):
@@ -12,29 +12,30 @@ class BaseSpatioTemporal(ABC, pl.LightningModule):
         self.hidden_feature_size = hidden_feature_size
         self.recurrent = self.init_spatio_temporal_layer()
 
-        def init_spatio_temporal_layer(self) -> torch.nn.Module:
-            pass
-
-    def __simulation_pass__(self, batch):
+    def init_spatio_temporal_layer(self) -> torch.nn.Module:
         pass
 
-    def training_step(self, batch, batch_idx):
+    def __simulation_pass__(self, batch) -> MetricCollection:
+        pass
+
+    def training_step(self, batch, batch_idx) -> MetricCollection:
         loss = self.__simulation_pass__(batch)
         self.log("training_loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True, batch_size=1)
         return loss
 
-    def validation_step(self, batch, batch_idx):
+    def validation_step(self, batch, batch_idx) -> MetricCollection:
         loss = self.__simulation_pass__(batch)
         self.log("val_loss", loss, on_step=False, on_epoch=True, prog_bar=True, batch_size=1)
         return loss
 
 
-class BaseSequentialSpatioTemporal(ABC, BaseSpatioTemporal):
+class BaseSequentialSpatioTemporal(BaseSpatioTemporal):
     def __init__(self, input_feature_size, output_feature_size, hidden_feature_size):
         super().__init__(input_feature_size, output_feature_size, hidden_feature_size)
         self.linear = torch.nn.Linear(hidden_feature_size, output_feature_size)
 
-    def forward(self, x, edge_index, edge_weight, memory=None):
+    def forward(self, x: Tensor, edge_index: Tensor, edge_weight: Tensor, memory: Union[Tensor, None] = None) \
+            -> (Tensor, Tensor):
         memory = self.recurrent(x, edge_index, edge_weight, memory)
         h = F.relu(memory)
         h = self.linear(h)

@@ -1,9 +1,10 @@
 from jedi.plugins import pytest
 import torch
-from project.data.PhenomenaDataLoader import PhenomenaDataLoader
+from project.data.loader import PhenomenaDataLoader
 
 nodes = 400
 simulations_snapshots = 100
+
 
 def test_load_simple_data():
     file_size_in_folder = 4
@@ -29,6 +30,7 @@ def test_clean_position():
     snapshot = loader.data[0][0]
     assert snapshot.x.shape == (nodes, 1)
 
+
 def test_memory_window():
     window = 5
     loader = PhenomenaDataLoader("./snapshots/subset/", 1)
@@ -37,4 +39,3 @@ def test_memory_window():
     assert snapshot.x.shape == (nodes, window)
     assert len(dataset) == len(loader.data[0]) - window
     assert torch.equal(dataset[0].y, loader.data[0][5].y)
-

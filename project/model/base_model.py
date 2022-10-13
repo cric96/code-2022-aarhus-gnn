@@ -34,12 +34,12 @@ class BaseSequentialSpatioTemporal(BaseSpatioTemporal):
         super().__init__(input_feature_size, output_feature_size, hidden_feature_size)
         self.linear = torch.nn.Linear(hidden_feature_size, output_feature_size)
 
-    def forward(self, x: Tensor, edge_index: Tensor, edge_weight: Tensor, memory: Union[Tensor, None] = None) \
+    def forward(self, x: Tensor, edge_index: Tensor, edge_weight: Tensor, memory: Union[Tensor, None, tuple[Tensor]] = None) \
             -> (Tensor, Tensor):
-        memory = self.recurrent(x, edge_index, edge_weight, memory)
-        h = F.relu(memory)
-        h = self.linear(h)
-        return h, memory
+        y, memory = self.__recurrent_pass__(x, edge_index, edge_weight, memory)
+        y = F.relu(y)
+        y = self.linear(y)
+        return y, memory
 
     def __simulation_pass__(self, batch):
         cost = 0
@@ -51,3 +51,8 @@ class BaseSequentialSpatioTemporal(BaseSpatioTemporal):
             cost = cost + F.mse_loss(h, y)
         loss = cost / len(batch)
         return loss
+
+    def __recurrent_pass__(self, x: Tensor, edge_index: Tensor, edge_weight: Tensor,
+                           memory: Union[Tensor, None] = None) -> (Tensor, Tensor):
+        h = self.recurrent(x, edge_index, edge_weight, memory)
+        return h, h

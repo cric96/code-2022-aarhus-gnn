@@ -56,3 +56,33 @@ class BaseSequentialSpatioTemporal(BaseSpatioTemporal):
                            memory: Union[Tensor, None] = None) -> (Tensor, Tensor):
         h = self.recurrent(x, edge_index, edge_weight, memory)
         return h, h
+
+
+    def configure_optimizers(self):
+        optimizer = torch.optim.Adam(self.parameters(), lr=0.0001)  ## todo move in another position
+        return {
+            "optimizer": optimizer,
+            "lr_scheduler": {
+                "scheduler": torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer),
+                "monitor": "val_loss",
+            },
+        }
+
+class BaseWindowSpatioTemporal(BaseSpatioTemporal):
+    def __init__(self, input_feature_size, output_feature_size, hidden_feature_size):
+        super().__init__(input_feature_size, output_feature_size, hidden_feature_size)
+        self.linear = torch.nn.Linear(hidden_feature_size, output_feature_size)
+
+    def forward(self, x: Tensor, edge_index: Tensor, edge_weight: Tensor, memory: Union[Tensor, None, tuple[Tensor]] = None) \
+            -> (Tensor, Tensor):
+        y, memory = self.__recurrent_pass__(x, edge_index, edge_weight, memory)
+        y = F.relu(y)
+        y = self.linear(y)
+        return y, memory
+
+    def __simulation_pass__(self, batch):
+        x = batch.x
+        y = batch.y.view(-1, 1)
+        h = self(x, batch.edge_index, batch.edge_attr)
+        loss = F.mse_loss(h, y)
+        return loss

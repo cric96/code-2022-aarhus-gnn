@@ -7,6 +7,7 @@ from project.model.utils import GnnTemporalWrap
 from project.model.base_model import BaseSequentialSpatioTemporal
 from torch_geometric.nn import GCN
 
+
 class SpatioTemporalConvolutionGru(BaseSequentialSpatioTemporal):
     # K = 1 => No neighborhood, K>2 neighborhood
     def __init__(self, input_feature_size, output_feature_size, hidden_feature_size, K=1):
@@ -15,6 +16,7 @@ class SpatioTemporalConvolutionGru(BaseSequentialSpatioTemporal):
 
     def init_spatio_temporal_layer(self) -> torch.nn.Module:
         return GConvGRU(self.input_feature_size, self.hidden_feature_size, K=self.K)
+
 
 class SpatioTemporalConvolutionLstm(BaseSequentialSpatioTemporal):
     # K = 1 => No neighborhood, K>2 neighborhood
@@ -48,6 +50,7 @@ class TemporalGru(BaseSequentialSpatioTemporal):
     def __recurrent_pass__(self, x: Tensor, edge_index: Tensor, edge_weight: Tensor,
                            memory: Union[Tensor, None] = None) -> (Tensor, Tensor):
         return self.recurrent(x, edge_index, edge_weight, memory)
+
 
 class SpatialGNN(BaseSequentialSpatioTemporal):
     # K = 1 => No neighborhood, K>2 neighborhood

@@ -33,8 +33,8 @@ early_stop_callback = EarlyStopping(monitor='val_loss',
                                     mode='min',
                                     max_epoch=200)
 
-spatio_gru = SpatioTemporalConvolutionGru(1, forecast_size, 32)
-spatio_lstm = SpatioTemporalConvolutionLstm(1, forecast_size, 32)
+spatio_gru = SpatioTemporalConvolutionGru(2, forecast_size, 32)
+spatio_lstm = SpatioTemporalConvolutionLstm(2, forecast_size, 32)
 spatio = SpatialGNN(1, forecast_size, 32)
 temporal = TemporalGru(1, forecast_size, 32)
 linear = Linear(1, forecast_size, 32)

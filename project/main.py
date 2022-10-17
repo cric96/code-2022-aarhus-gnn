@@ -1,14 +1,14 @@
-from project.model.sequential import SpatioTemporalConvolutionGru, SpatioTemporalConvolutionLstm, TemporalGru, SpatialGNN
-from project.model.linear import Linear
+from model.sequential import SpatioTemporalConvolutionGru, SpatioTemporalConvolutionLstm, TemporalGru, SpatialGNN
+from model.linear import Linear
 from pytorch_lightning.loggers import NeptuneLogger
-from project.data.loader import PhenomenaDataLoader, GraphDatasetIterator
+from data.loader import PhenomenaDataLoader, GraphDatasetIterator
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 import pytorch_lightning as pl
 
 
 forecast_size = 3
 data_size = 10
-loader = PhenomenaDataLoader("./snapshots/subset/", forecast_size)
+loader = PhenomenaDataLoader("../data/raw/", forecast_size)
 loader.clean_position()
 torch_graph_data_position = loader.data[:data_size]
 
@@ -44,5 +44,4 @@ networks = [spatio_gru, spatio_lstm, spatio, temporal, linear]
 trainer = pl.Trainer(callbacks=[early_stop_callback], accelerator="gpu", devices=1, logger=neptune_logger)
 
 for network in networks:
-    trainer.fit(network, GraphDatasetIterator(torch_graph_train), GraphDatasetIterator(torch_graph_validation)))
-
+    trainer.fit(network, GraphDatasetIterator(torch_graph_train), GraphDatasetIterator(torch_graph_validation))

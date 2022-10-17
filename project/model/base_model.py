@@ -11,6 +11,7 @@ class BaseSpatioTemporal(ABC, pl.LightningModule):
         self.output_feature_size = output_feature_size
         self.hidden_feature_size = hidden_feature_size
         self.recurrent = self.init_spatio_temporal_layer()
+        self.learning_rate = 0.01
 
     def init_spatio_temporal_layer(self) -> torch.nn.Module:
         pass
@@ -20,12 +21,12 @@ class BaseSpatioTemporal(ABC, pl.LightningModule):
 
     def training_step(self, batch, batch_idx) -> MetricCollection:
         loss = self.__simulation_pass__(batch)
-        self.log("training_loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True, batch_size=1)
+        self.log("training_loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         return loss
 
     def validation_step(self, batch, batch_idx) -> MetricCollection:
         loss = self.__simulation_pass__(batch)
-        self.log("val_loss", loss, on_step=False, on_epoch=True, prog_bar=True, batch_size=1)
+        self.log("val_loss", loss, on_step=False, on_epoch=True, prog_bar=True)
         return loss
 
 
@@ -46,7 +47,7 @@ class BaseSequentialSpatioTemporal(BaseSpatioTemporal):
         memory = None
         for snapshot in batch:
             x = snapshot.x
-            y = snapshot.y.view(-1, 1)
+            y = snapshot.y
             (h, memory) = self(x, snapshot.edge_index, snapshot.edge_attr, memory)
             cost = cost + F.mse_loss(h, y)
         loss = cost / len(batch)
@@ -59,7 +60,7 @@ class BaseSequentialSpatioTemporal(BaseSpatioTemporal):
 
 
     def configure_optimizers(self):
-        optimizer = torch.optim.Adam(self.parameters(), lr=0.0001)  ## todo move in another position
+        optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate)  ## todo move in another position
         return {
             "optimizer": optimizer,
             "lr_scheduler": {

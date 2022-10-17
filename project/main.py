@@ -44,9 +44,9 @@ for network in networks:
     trainer = pl.Trainer(callbacks=[early_stop_callback], accelerator="cpu", devices=1, logger=neptune_logger,
                          max_epochs=200, auto_lr_find=True)
     # Run learning rate finder
-    lr_finder = trainer.tuner.lr_find(network, GraphDatasetIterator(torch_graph_train), GraphDatasetIterator(torch_graph_validation))
-    fig = lr_finder.plot(suggest=True)
-    fig.show()
+    lr_finder = trainer.tuner.lr_find(network, GraphDatasetIterator(torch_graph_train[:1]), GraphDatasetIterator(torch_graph_validation[:1]), mode="linear")
+    #fig = lr_finder.plot(suggest=True)
+    #fig.show()
     new_lr = lr_finder.suggestion()
     # update hparams of the model
     network.hparams.learning_rate = new_lr

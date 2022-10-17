@@ -44,10 +44,10 @@ class PhenomenaDataLoader:
 
     def __covert_to_geometric(self, raw, forecast_size):
         def convert_single_time_stamp(json):
-            x = Tensor(json[0]).reshape((len(json[0]), 3))
+            x = Tensor(json[0]).reshape((len(json[0]), 3)) / torch.tensor([100, 100, 100])
             edge_info = np.array(json[1])
             edge_index = LongTensor(edge_info[:, :2]).t()
-            edge_data = Tensor(edge_info[:, 2:])
+            edge_data = Tensor(edge_info[:, 2:]) / torch.tensor([100])
             return Data(x=x, edge_index=edge_index, edge_attr=edge_data)
 
         def inject_forecast(current, next):

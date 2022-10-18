@@ -13,11 +13,6 @@ loader = PhenomenaDataLoader("../data/raw/", data_size, forecast_size)
 loader.clean_position()
 torch_graph_data = loader.data
 
-neptune_logger = NeptuneLogger(
-    api_key="eyJhcGlfYWRkcmVzcyI6Imh0dHBzOi8vYXBwLm5lcHR1bmUuYWkiLCJhcGlfdXJsIjoiaHR0cHM6Ly9hcHAubmVwdHVuZS5haSIsImFwaV9rZXkiOiJkZjMyMzc3Ni0yZDc4LTQzMWMtYTIzMi0wMDVlMDU5MWRiMDEifQ==",  # replace with your own
-    project="PS-Lab/gnn-forecast",
-)
-
 split_test = 0.8
 split_validation = 0.8
 
@@ -41,8 +36,12 @@ for network in networks:
                                         patience=5,
                                         verbose=False,
                                         mode='min')
-    trainer = pl.Trainer(callbacks=[early_stop_callback], accelerator="cpu", devices=1, logger=neptune_logger,
-                         max_epochs=200, auto_lr_find=True)
+    neptune_logger = NeptuneLogger(
+        api_key="eyJhcGlfYWRkcmVzcyI6Imh0dHBzOi8vYXBwLm5lcHR1bmUuYWkiLCJhcGlfdXJsIjoiaHR0cHM6Ly9hcHAubmVwdHVuZS5haSIsImFwaV9rZXkiOiJkZjMyMzc3Ni0yZDc4LTQzMWMtYTIzMi0wMDVlMDU5MWRiMDEifQ==",
+        project="PS-Lab/gnn-forecast",
+    )
+    trainer = pl.Trainer(callbacks=[early_stop_callback], accelerator="gpu", devices=1, logger=neptune_logger,
+                         max_epochs=200)
     # Run learning rate finder
     lr_finder = trainer.tuner.lr_find(network, GraphDatasetIterator(torch_graph_train[:1]), GraphDatasetIterator(torch_graph_validation[:1]), mode="linear")
     #fig = lr_finder.plot(suggest=True)

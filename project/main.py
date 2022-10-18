@@ -32,7 +32,7 @@ networks = [spatio_gru, spatio_lstm, spatio, temporal, linear]
 
 for network in networks:
     early_stop_callback = EarlyStopping(monitor='val_loss',
-                                        min_delta=0.1,
+                                        min_delta=0.0001,
                                         patience=5,
                                         verbose=False,
                                         mode='min')

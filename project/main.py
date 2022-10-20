@@ -44,10 +44,9 @@ for network in networks:
                          max_epochs=200)
     # Run learning rate finder
     lr_finder = trainer.tuner.lr_find(network, GraphDatasetIterator(torch_graph_train[:1]), GraphDatasetIterator(torch_graph_validation[:1]), mode="linear")
-    #fig = lr_finder.plot(suggest=True)
-    #fig.show()
     new_lr = lr_finder.suggestion()
     # update hparams of the model
     network.hparams.learning_rate = new_lr
     print("tuning ...")
     trainer.fit(network, GraphDatasetIterator(torch_graph_train), GraphDatasetIterator(torch_graph_validation))
+    neptune_logger.finalize("success")

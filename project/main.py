@@ -39,6 +39,7 @@ for network in networks:
     neptune_logger = NeptuneLogger(
         api_key="eyJhcGlfYWRkcmVzcyI6Imh0dHBzOi8vYXBwLm5lcHR1bmUuYWkiLCJhcGlfdXJsIjoiaHR0cHM6Ly9hcHAubmVwdHVuZS5haSIsImFwaV9rZXkiOiJkZjMyMzc3Ni0yZDc4LTQzMWMtYTIzMi0wMDVlMDU5MWRiMDEifQ==",
         project="PS-Lab/gnn-forecast",
+        name=str(type(network))
     )
     trainer = pl.Trainer(callbacks=[early_stop_callback], accelerator="gpu", devices=1, logger=neptune_logger,
                          max_epochs=200)

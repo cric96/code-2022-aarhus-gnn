@@ -10,10 +10,11 @@ class BaseSpatioTemporal(ABC, pl.LightningModule):
         self.input_feature_size = input_feature_size
         self.output_feature_size = output_feature_size
         self.hidden_feature_size = hidden_feature_size
-        self.recurrent = self.init_spatio_temporal_layer()
+        self.recurrent = self.__init_spatio_temporal_layer__()
         self.learning_rate = 0.01
+        self.save_hyperparameters()
 
-    def init_spatio_temporal_layer(self) -> torch.nn.Module:
+    def __init_spatio_temporal_layer__(self) -> torch.nn.Module:
         pass
 
     def __simulation_pass__(self, batch) -> MetricCollection:

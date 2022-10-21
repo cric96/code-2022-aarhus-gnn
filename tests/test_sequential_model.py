@@ -2,7 +2,7 @@ import pytest
 from torch.utils.data import DataLoader
 
 from project.data.loader import PhenomenaDataLoader, GraphDatasetIterator
-from project.model.sequential import SpatioTemporalConvolutionGru, SpatioTemporalConvolutionLstm, TemporalGru, SpatialGNN
+from project.model.sequential import SpatioTemporalConvolutionGru, SpatioTemporalConvolutionLstm, TemporalGru, SpatialGNN, SpatialPlusTemporal
 from project.model.linear import Linear
 import pytorch_lightning as pl
 forecast_size = 3
@@ -14,9 +14,10 @@ testdata = [
     SpatioTemporalConvolutionLstm(1, forecast_size, 5),
     Linear(1, forecast_size, 5),
     TemporalGru(1, forecast_size, 5),
-    SpatialGNN(1, forecast_size, 5)
+    SpatialGNN(1, forecast_size, 5),
+    SpatialPlusTemporal(1, forecast_size, 10, 5)
 ]
-ids = ["spatio temporal gru", "spatio temporal lstm", "feed forward", "temporal gru", "spatial GNN"]
+ids = ["spatio temporal gru", "spatio temporal lstm", "feed forward", "temporal gru", "spatial GNN", "spatia and temporal"]
 
 
 @pytest.mark.parametrize("model", testdata, ids=ids)

@@ -11,7 +11,7 @@ class Linear(BaseSequentialSpatioTemporal):
     def __init__(self, input_feature_size, output_feature_size, hidden_feature_size):
         super().__init__(input_feature_size, output_feature_size, hidden_feature_size)
 
-    def init_spatio_temporal_layer(self) -> torch.nn.Module:
+    def __init_spatio_temporal_layer__(self) -> torch.nn.Module:
         return GnnWrap(torch.nn.Linear(self.input_feature_size, self.hidden_feature_size))
 
     def configure_optimizers(self):

@@ -10,6 +10,7 @@ setup(
     author_email='gianluca.aguzzi@unibo.it',
     # REPLACE WITH YOUR OWN GITHUB PROJECT LINK
     url='https://github.com/cric96/code-2022-aarhus-gnn',
-    install_requires=['pytorch-lightning'],
-    packages=find_packages(),
+    install_requires=['pytorch-lightning', 'torch-geometric-temeporal'],
+    packages=find_packages('project'),
+    package_dir={'':'project'}
 )

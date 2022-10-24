@@ -1,0 +1,51 @@
+metadata:
+  max_epochs: 200
+  data_path: "../data/raw/"
+  accelerator: "cpu"
+  data_size: 10
+
+simulations:
+  - tags: ["zero hop", "forecast=2", "spatio-gru"]
+    name: "spatio-temporal-GRU"
+    description: "Learning process of the spatio temporal GRU model with no communication"
+    module: &sequential "project.model.sequential"
+    class_name: &stgru "SpatioTemporalConvolutionGru"
+    args: &base
+      - &input_feature 1
+      - &simple_forecast 2
+      - &hidden_feature 32
+
+  - tags: ["zero hop", "forecast=2", "spatio-lstm"]
+    name: "spatio-temporal-lstm"
+    description: "Learning process of the spatio temporal LSTM model with no communication"
+    module: *sequential
+    class_name: &stlstm "SpatioTemporalConvolutionLstm"
+    args: *base
+
+  - tags: ["one hop", "forecast=2", "spatio"]
+    name: "spatio-gcn"
+    description: "Learning process of the spatial model (GCN) "
+    module: *sequential
+    class_name: &gnn "SpatialGNN"
+    args: *base
+
+  - tags: ["zero hop", "forecast=2", "spatio"]
+    name: "temporal"
+    description: "Learning process of the temporal model (GRU) "
+    module: *sequential
+    class_name: &gru "TemporalGru"
+    args: *base
+
+  - tags: ["zero hop", "forecast=2", "gnn-and-rnn"]
+    name: "temporal-and-spatial"
+    description: "Learning process of a spatial model (GCN) with a RNN stacked on top of it (GRU)"
+    module: *sequential
+    class_name: &gcngru "SpatialPlusTemporal"
+    args: [*input_feature, *simple_forecast, *hidden_feature, &hidden_temporal 16]
+
+  - tags: ["zero hop", "forecast=2", "linear"]
+    name: "temporal-and-spatial"
+    description: "Learning process of a spatial model (GCN) with a RNN stacked on top of it (GRU)"
+    module: &linear_module "project.model.linear"
+    class_name: &linear "Linear"
+    args: *base

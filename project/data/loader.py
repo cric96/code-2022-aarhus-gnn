@@ -71,7 +71,6 @@ class PhenomenaDataLoader:
             file.close()
         return graph_data
 
-
 class GraphDatasetIterator(IterableDataset):
     def __init__(self, dataset):
         self.dataset = dataset

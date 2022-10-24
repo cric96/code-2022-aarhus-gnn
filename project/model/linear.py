@@ -13,6 +13,3 @@ class Linear(BaseSequentialSpatioTemporal):
 
     def __init_spatio_temporal_layer__(self) -> torch.nn.Module:
         return GnnWrap(torch.nn.Linear(self.input_feature_size, self.hidden_feature_size))
-
-    def configure_optimizers(self):
-        return torch.optim.Adam(self.parameters(), lr=0.01)  ## todo move in another position

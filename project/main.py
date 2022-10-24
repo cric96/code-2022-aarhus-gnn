@@ -8,7 +8,16 @@ import yaml
 from pydoc import locate
 import argparse
 
-with open("../config.yml") as file: # todo add as parameter
+parser = argparse.ArgumentParser(description='Evaluation of neural model')
+parser.add_argument('config', metavar='config path', type=str, help='The path of the configuration file')
+parser.add_argument('-p', '--data-path', type=str, help='The path of the data to load for the training part')
+parser.add_argument('-d', '--data-size', type=int, help='How many simulations should the system consider')
+parser.add_argument('-e', '--max-epochs', type=str, help='Max number of epochs performed by the traning loop')
+parser.add_argument('-a', '--accelerator', type=str, help="Accelerator used for the training loop", choices=['cpu', 'cuda', 'tpu'])
+
+args = parser.parse_args()
+
+with open(args.config) as file: # todo add as parameter
     configuration = yaml.load(file, Loader=yaml.FullLoader)
     metadata = configuration['metadata']
     simulations = configuration['simulations']
@@ -16,9 +25,8 @@ with open("../config.yml") as file: # todo add as parameter
 
         print("Training of " + simulation['name'])
         forecast_size = simulation['args'][1] ## forecast_size from args
-        data_size = configuration['data_size']  ## todo, same thing of window_size
-
-        loader = PhenomenaDataLoader("../data/raw/", data_size, forecast_size)
+        data_size = args.data_size or metadata['data_size']
+        loader = PhenomenaDataLoader(args.data_path or metadata["data_path"], data_size, forecast_size)
         loader.clean_position()
         torch_graph_data = loader.data
 
@@ -53,10 +61,10 @@ with open("../config.yml") as file: # todo add as parameter
 
         trainer = pl.Trainer(
             callbacks=[early_stop_callback],
-            accelerator=metadata['accelerator'],
+            accelerator=args.accelerator or metadata['accelerator'],
             devices=1,
             logger=neptune_logger,
-            max_epochs=metadata['max_epochs']
+            max_epochs=args.max_epochs or metadata['max_epochs']
         )
 
         lr_finder = trainer.tuner.lr_find(

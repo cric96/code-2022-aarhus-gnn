@@ -12,7 +12,7 @@ parser = argparse.ArgumentParser(description='Evaluation of neural model')
 parser.add_argument('config', metavar='config path', type=str, help='The path of the configuration file')
 parser.add_argument('-p', '--data-path', type=str, help='The path of the data to load for the training part')
 parser.add_argument('-d', '--data-size', type=int, help='How many simulations should the system consider')
-parser.add_argument('-e', '--max-epochs', type=str, help='Max number of epochs performed by the traning loop')
+parser.add_argument('-e', '--max-epochs', type=int, help='Max number of epochs performed by the traning loop')
 parser.add_argument('-a', '--accelerator', type=str, help="Accelerator used for the training loop", choices=['cpu', 'cuda', 'tpu'])
 
 args = parser.parse_args()

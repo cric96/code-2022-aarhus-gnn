@@ -1,10 +1,13 @@
 metadata:
   max_epochs: 200
-  data_path: "../data/raw/"
+  data_path: "../../data/raw/"
   accelerator: "cpu"
   data_size: 10
-
+  min_delta: 0.00001
+  patience: 20
 simulations:
+# FORECAST SIZE = 2
+## NO HOP
   - tags: ["zero hop", "forecast=2", "spatio-gru"]
     name: "spatio-temporal-GRU"
     description: "Learning process of the spatio temporal GRU model with no communication"
@@ -49,3 +52,223 @@ simulations:
     module: &linear_module "project.model.linear"
     class_name: &linear "Linear"
     args: *base
+
+## ONE HOP
+  - tags: [ "one hop", "forecast=2", "spatio-gru" ]
+    name: "spatio-temporal-GRU"
+    description: "Learning process of the spatio temporal GRU model with communication (k=2)"
+    module: *sequential
+    class_name: *stgru
+    args: &base_one_hop [*input_feature, *simple_forecast, *hidden_feature, 2]
+
+  - tags: ["one hop", "forecast=2", "spatio-lstm" ]
+    name: "spatio-temporal-lstm"
+    description: "Learning process of the spatio temporal LSTM model with communication (k=2)"
+    module: *sequential
+    class_name: *stgru
+    args: *base_one_hop
+
+  - tags: [ "one hop", "forecast=2", "spatio" ]
+    name: "spatio-gcn"
+    description: "Learning process of the spatial model (GCN) (k=2)"
+    module: *sequential
+    class_name: *gnn
+    args: *base_one_hop
+
+## TWO HOP
+  - tags: [ "one hop", "forecast=2", "spatio-gru" ]
+    name: "spatio-temporal-GRU"
+    description: "Learning process of the spatio temporal GRU model with communication (k=3)"
+    module: *sequential
+    class_name: *stgru
+    args: &base_two_hop [*input_feature, *simple_forecast, *hidden_feature, 3]
+
+  - tags: ["one hop", "forecast=2", "spatio-lstm" ]
+    name: "spatio-temporal-lstm"
+    description: "Learning process of the spatio temporal LSTM model with communication (k=3)"
+    module: *sequential
+    class_name: *stgru
+    args: *base_two_hop
+
+  - tags: [ "one hop", "forecast=2", "spatio" ]
+    name: "spatio-gcn"
+    description: "Learning process of the spatial model (GCN) (k=3)"
+    module: *sequential
+    class_name: *gnn
+    args: *base_two_hop
+
+# FORECAST SIZE = 3
+## NO HOP
+  - tags: ["zero hop", "forecast=3", "spatio-gru"]
+    name: "spatio-temporal-GRU"
+    description: "Learning process of the spatio temporal GRU model with no communication"
+    module: *sequential
+    class_name: *stgru
+    args: &base_forecast_three [1, &forecast_three 3, *hidden_feature]
+
+  - tags: ["zero hop", "forecast=3", "spatio-lstm"]
+    name: "spatio-temporal-lstm"
+    description: "Learning process of the spatio temporal LSTM model with no communication"
+    module: *sequential
+    class_name: *stlstm
+    args: *base_forecast_three
+
+  - tags: ["one hop", "forecast=3", "spatio"]
+    name: "spatio-gcn"
+    description: "Learning process of the spatial model (GCN) "
+    module: *sequential
+    class_name: *gnn
+    args: *base_forecast_three
+
+  - tags: ["zero hop", "forecast=3", "spatio"]
+    name: "temporal"
+    description: "Learning process of the temporal model (GRU) "
+    module: *sequential
+    class_name: *gru
+    args: *base_forecast_three
+
+  - tags: ["zero hop", "forecast=3", "gnn-and-rnn"]
+    name: "temporal-and-spatial"
+    description: "Learning process of a spatial model (GCN) with a RNN stacked on top of it (GRU)"
+    module: *sequential
+    class_name: *gcngru
+    args: [*input_feature, *forecast_three, *hidden_feature, *hidden_temporal]
+
+  - tags: ["zero hop", "forecast=3", "linear"]
+    name: "temporal-and-spatial"
+    description: "Learning process of a spatial model (GCN) with a RNN stacked on top of it (GRU)"
+    module: *linear_module
+    class_name: *linear
+    args: *base
+
+## ONE HOP
+  - tags: [ "one hop", "forecast=3", "spatio-gru" ]
+    name: "spatio-temporal-GRU"
+    description: "Learning process of the spatio temporal GRU model with communication (k=2)"
+    module: *sequential
+    class_name: *stgru
+    args: &base_one_hop_forecast_three [*input_feature, *forecast_three, *hidden_feature, 2]
+
+  - tags: ["one hop", "forecast=3", "spatio-lstm" ]
+    name: "spatio-temporal-lstm"
+    description: "Learning process of the spatio temporal LSTM model with communication (k=2)"
+    module: *sequential
+    class_name: *stgru
+    args: *base_one_hop_forecast_three
+
+  - tags: [ "one hop", "forecast=3", "spatio" ]
+    name: "spatio-gcn"
+    description: "Learning process of the spatial model (GCN) (k=2)"
+    module: *sequential
+    class_name: *gnn
+    args: *base_one_hop_forecast_three
+
+## TWO HOP
+  - tags: [ "one hop", "forecast=3", "spatio-gru" ]
+    name: "spatio-temporal-GRU"
+    description: "Learning process of the spatio temporal GRU model with communication (k=3)"
+    module: *sequential
+    class_name: *stgru
+    args: &base_two_hop_forecast_three  [*input_feature, *forecast_three, *hidden_feature, 3]
+
+  - tags: ["one hop", "forecast=3", "spatio-lstm" ]
+    name: "spatio-temporal-lstm"
+    description: "Learning process of the spatio temporal LSTM model with communication (k=3)"
+    module: *sequential
+    class_name: *stgru
+    args: *base_two_hop_forecast_three
+
+  - tags: [ "one hop", "forecast=3", "spatio" ]
+    name: "spatio-gcn"
+    description: "Learning process of the spatial model (GCN) (k=3)"
+    module: *sequential
+    class_name: *gnn
+    args: *base_two_hop_forecast_three
+
+# FORECAST SIZE = 5
+## NO HOP
+  - tags: ["zero hop", "forecast=5", "spatio-gru"]
+    name: "spatio-temporal-GRU"
+    description: "Learning process of the spatio temporal GRU model with no communication"
+    module: *sequential
+    class_name: *stgru
+    args: &base_forecast_five [1, &forecast_five 5, *hidden_feature]
+
+  - tags: ["zero hop", "forecast=3", "spatio-lstm"]
+    name: "spatio-temporal-lstm"
+    description: "Learning process of the spatio temporal LSTM model with no communication"
+    module: *sequential
+    class_name: *stlstm
+    args: *base_forecast_five
+
+  - tags: ["one hop", "forecast=5", "spatio"]
+    name: "spatio-gcn"
+    description: "Learning process of the spatial model (GCN) "
+    module: *sequential
+    class_name: *gnn
+    args: *base_forecast_five
+
+  - tags: ["zero hop", "forecast=5", "spatio"]
+    name: "temporal"
+    description: "Learning process of the temporal model (GRU) "
+    module: *sequential
+    class_name: *gru
+    args: *base_forecast_five
+
+  - tags: ["zero hop", "forecast=5", "gnn-and-rnn"]
+    name: "temporal-and-spatial"
+    description: "Learning process of a spatial model (GCN) with a RNN stacked on top of it (GRU)"
+    module: *sequential
+    class_name: *gcngru
+    args: [*input_feature, *forecast_five, *hidden_feature, *hidden_temporal]
+
+  - tags: ["zero hop", "forecast=3", "linear"]
+    name: "temporal-and-spatial"
+    description: "Learning process of a spatial model (GCN) with a RNN stacked on top of it (GRU)"
+    module: *linear_module
+    class_name: *linear
+    args: *base_forecast_five
+
+## ONE HOP
+  - tags: [ "one hop", "forecast=5", "spatio-gru" ]
+    name: "spatio-temporal-GRU"
+    description: "Learning process of the spatio temporal GRU model with communication (k=2)"
+    module: *sequential
+    class_name: *stgru
+    args: &base_one_hop_forecast_five [*input_feature, *forecast_five, *hidden_feature, 2]
+
+  - tags: ["one hop", "forecast=5", "spatio-lstm" ]
+    name: "spatio-temporal-lstm"
+    description: "Learning process of the spatio temporal LSTM model with communication (k=2)"
+    module: *sequential
+    class_name: *stgru
+    args: *base_one_hop_forecast_three
+
+  - tags: [ "one hop", "forecast=5", "spatio" ]
+    name: "spatio-gcn"
+    description: "Learning process of the spatial model (GCN) (k=2)"
+    module: *sequential
+    class_name: *gnn
+    args: *base_one_hop_forecast_three
+
+## TWO HOP
+  - tags: [ "one hop", "forecast=5", "spatio-gru" ]
+    name: "spatio-temporal-GRU"
+    description: "Learning process of the spatio temporal GRU model with communication (k=3)"
+    module: *sequential
+    class_name: *stgru
+    args: &base_two_hop_forecast_five  [*input_feature, *forecast_five, *hidden_feature, 3]
+
+  - tags: ["one hop", "forecast=5", "spatio-lstm" ]
+    name: "spatio-temporal-lstm"
+    description: "Learning process of the spatio temporal LSTM model with communication (k=3)"
+    module: *sequential
+    class_name: *stgru
+    args: *base_two_hop_forecast_three
+
+  - tags: [ "one hop", "forecast=5", "spatio" ]
+    name: "spatio-gcn"
+    description: "Learning process of the spatial model (GCN) (k=3)"
+    module: *sequential
+    class_name: *gnn
+    args: *base_two_hop_forecast_three

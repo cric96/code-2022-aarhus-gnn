@@ -1,4 +1,5 @@
-from project.model.sequential import SpatioTemporalConvolutionGru, SpatioTemporalConvolutionLstm, TemporalGru, SpatialGNN
+from project.model.sequential import SpatioTemporalConvolutionGru, SpatioTemporalConvolutionLstm, TemporalGru, \
+    SpatialGNN
 from project.model.linear import Linear
 from pytorch_lightning.loggers import NeptuneLogger
 from project.data.loader import PhenomenaDataLoader, GraphDatasetIterator
@@ -13,18 +14,19 @@ parser.add_argument('config', metavar='config path', type=str, help='The path of
 parser.add_argument('-p', '--data-path', type=str, help='The path of the data to load for the training part')
 parser.add_argument('-d', '--data-size', type=int, help='How many simulations should the system consider')
 parser.add_argument('-e', '--max-epochs', type=int, help='Max number of epochs performed by the traning loop')
-parser.add_argument('-a', '--accelerator', type=str, help="Accelerator used for the training loop", choices=['cpu', 'cuda', 'tpu'])
-
+parser.add_argument('-a', '--accelerator', type=str, help="Accelerator used for the training loop",
+                    choices=['cpu', 'cuda', 'tpu'])
+parser.add_argument('-pa', '--patience', type=int, help="Patience used for early stopping")
+parser.add_argument('-m', '--min-delta', type=float, help="Min delta used for early stopping")
 args = parser.parse_args()
 
-with open(args.config) as file: # todo add as parameter
+with open(args.config) as file:  # todo add as parameter
     configuration = yaml.load(file, Loader=yaml.FullLoader)
     metadata = configuration['metadata']
     simulations = configuration['simulations']
     for simulation in simulations:
-
         print("Training of " + simulation['name'])
-        forecast_size = simulation['args'][1] ## forecast_size from args
+        forecast_size = simulation['args'][1]  ## forecast_size from args
         data_size = args.data_size or metadata['data_size']
         loader = PhenomenaDataLoader(args.data_path or metadata["data_path"], data_size, forecast_size)
         loader.clean_position()
@@ -46,15 +48,15 @@ with open(args.config) as file: # todo add as parameter
         neptune_logger = NeptuneLogger(
             api_key="eyJhcGlfYWRkcmVzcyI6Imh0dHBzOi8vYXBwLm5lcHR1bmUuYWkiLCJhcGlfdXJsIjoiaHR0cHM6Ly9hcHAubmVwdHVuZS5haSIsImFwaV9rZXkiOiJkZjMyMzc3Ni0yZDc4LTQzMWMtYTIzMi0wMDVlMDU5MWRiMDEifQ==",
             project="PS-Lab/gnn-forecast",
-            name = simulation['name'],
-            description = simulation['description'],
-            tags = simulation['tags']
+            name=simulation['name'],
+            description=simulation['description'],
+            tags=simulation['tags']
         )
 
         early_stop_callback = EarlyStopping(
             monitor='val_loss',
-            min_delta=0.0001,
-            patience=5,
+            min_delta=metadata['min_delta'] or args.min_delta or 0.00001,
+            patience=metadata['patience'] or args.patience or 20,
             verbose=True,
             mode='min'
         )
@@ -66,19 +68,19 @@ with open(args.config) as file: # todo add as parameter
             logger=neptune_logger,
             max_epochs=args.max_epochs or metadata['max_epochs']
         )
-
+        train, validation = GraphDatasetIterator(torch_graph_train[:1]), GraphDatasetIterator(torch_graph_validation[:1])
         lr_finder = trainer.tuner.lr_find(
             network,
             GraphDatasetIterator(torch_graph_train[:1]),
             GraphDatasetIterator(torch_graph_validation[:1]),
             mode="linear"
         )
-
+        del train, validation
+        train, validation = GraphDatasetIterator(torch_graph_train), GraphDatasetIterator(torch_graph_validation)
         new_lr = lr_finder.suggestion()
         # update hparams of the model
         network.hparams.learning_rate = new_lr
         print("tuning ...")
-        trainer.fit(network, GraphDatasetIterator(torch_graph_train), GraphDatasetIterator(torch_graph_validation))
+        trainer.fit(network, train, validation)
         neptune_logger.finalize("success")
-        del neptune_logger
-        del loader.data
+        del neptune_logger, loader.data, loader, network, trainer, train, validation

@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='gnn-forecast',
-    version='0.0.3',
+    version='0.0.4',
     description='Forecasting of distributed spatio-temporal phenomena using Graph Neural Network + Recurrent Neural Networks',
     author='cric96',
     author_email='gianluca.aguzzi@unibo.it',

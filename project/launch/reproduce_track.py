@@ -1,9 +1,9 @@
 import argparse
 import pandas as pd
 import torch
-from project.data.loader import PhenomenaDataLoader
-from project.model.linear import Linear
-from project.model.sequential import SpatioTemporalConvolutionGru, SpatioTemporalConvolutionLstm, SpatialGNN, \
+from data.loader import PhenomenaDataLoader
+from model.linear import Linear
+from model.sequential import SpatioTemporalConvolutionGru, SpatioTemporalConvolutionLstm, SpatialGNN, \
     TemporalGru, SpatialPlusTemporal
 ## For plotly visualization
 import dash

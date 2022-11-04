@@ -1,8 +1,6 @@
-from project.model.sequential import SpatioTemporalConvolutionGru, SpatioTemporalConvolutionLstm, TemporalGru, \
-    SpatialGNN
-from project.model.linear import Linear
+
 from pytorch_lightning.loggers import NeptuneLogger
-from project.data.loader import PhenomenaDataLoader, GraphDatasetIterator
+from data.loader import PhenomenaDataLoader, GraphDatasetIterator
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 import pytorch_lightning as pl
 import yaml

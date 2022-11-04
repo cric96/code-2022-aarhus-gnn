@@ -3,8 +3,8 @@ from typing import Union
 import torch
 from torch import Tensor
 from torch_geometric_temporal import GConvGRU, GConvLSTM
-from project.model.utils import GnnTemporalWrap, GnnAndRnnWrap
-from project.model.base_model import BaseSequentialSpatioTemporal
+from model.utils import GnnTemporalWrap, GnnAndRnnWrap
+from model.base_model import BaseSequentialSpatioTemporal
 from torch_geometric.nn import GCN
 from torch.nn import GRU
 

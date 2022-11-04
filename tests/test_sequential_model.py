@@ -1,9 +1,9 @@
 import pytest
 from torch.utils.data import DataLoader
 
-from project.data.loader import PhenomenaDataLoader, GraphDatasetIterator
-from project.model.sequential import SpatioTemporalConvolutionGru, SpatioTemporalConvolutionLstm, TemporalGru, SpatialGNN, SpatialPlusTemporal
-from project.model.linear import Linear
+from data.loader import PhenomenaDataLoader, GraphDatasetIterator
+from model.sequential import SpatioTemporalConvolutionGru, SpatioTemporalConvolutionLstm, TemporalGru, SpatialGNN, SpatialPlusTemporal
+from model.linear import Linear
 import pytorch_lightning as pl
 forecast_size = 3
 loader = PhenomenaDataLoader("./snapshots/subset/", 1, forecast_size)

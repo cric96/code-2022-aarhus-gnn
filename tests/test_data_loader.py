@@ -1,6 +1,6 @@
 from jedi.plugins import pytest
 import torch
-from project.data.loader import PhenomenaDataLoader
+from data.loader import PhenomenaDataLoader
 
 nodes = 400
 simulations_snapshots = 100

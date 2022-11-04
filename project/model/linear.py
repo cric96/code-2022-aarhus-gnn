@@ -3,8 +3,8 @@ from typing import Union
 import torch
 from torch import Tensor
 
-from project.model.base_model import BaseSequentialSpatioTemporal
-from project.model.utils import GnnWrap
+from model.base_model import BaseSequentialSpatioTemporal
+from model.utils import GnnWrap
 
 
 class Linear(BaseSequentialSpatioTemporal):

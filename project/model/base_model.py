@@ -2,7 +2,7 @@ from abc import ABC
 import torch
 from torch.nn import functional as F
 import pytorch_lightning as pl
-from project.model.tensor_types import *
+from model.tensor_types import *
 
 class BaseSpatioTemporal(ABC, pl.LightningModule):
     def __init__(self, input_feature_size, output_feature_size, hidden_feature_size):

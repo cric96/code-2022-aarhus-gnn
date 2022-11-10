@@ -81,4 +81,4 @@ with open(args.config) as file:  # todo add as parameter
         print("tuning ...")
         trainer.fit(network, train, validation)
         neptune_logger.finalize("success")
-        del neptune_logger, loader.data, loader, network, trainer, train, validation
+        del neptune_logger, loader.data, loader, network, trainer

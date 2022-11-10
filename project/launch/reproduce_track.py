@@ -7,7 +7,7 @@ from model.sequential import SpatioTemporalConvolutionGru, SpatioTemporalConvolu
     TemporalGru, SpatialPlusTemporal
 ## For plotly visualization
 import dash
-from dash import dcc
+from dash import dcc, Output, Input, State
 from dash import html
 
 
@@ -76,29 +76,44 @@ def evaluation_pass(snapshosts, model, forecast_size, memory_adjust=None):
 
 
 def trajectory_for(reference, sensor_index):
-    return [graph[sensor_index][0].item() for graph in reference]
+    return [int(graph[sensor_index][0].item() * 100) for graph in reference]
 
 
 model.eval()
 total_cost = 0
 test = data_to_check[1:]
+total_nodes = test[0].x.size()[0]
 (cost, trajectory) = evaluation_pass(data_to_check, model, model.output_feature_size)
 start, end = (0, 900)
-node = 150
+node = 100
 
+print("Total node = " + str(total_nodes))
 ground_truth = [graph.x for graph in test[start:end]]
 y = trajectory_for(ground_truth, node)
-computed = trajectory_for(trajectory[start:end], node)
-
-lines = pd.DataFrame(dict(forecast=computed, y=y))
 pd.options.plotting.backend = "plotly"
-fig = lines.plot.line()
+computed = trajectory_for(trajectory[start:end], node)
+all_trajectories = [(trajectory_for(trajectory[start:end], node), trajectory_for(ground_truth, node)) for node in range(0, total_nodes)]
+all_trajectories = [pd.DataFrame(dict(forecast=trajectory, y=y)) for (trajectory, y) in all_trajectories]
+figs = [dataframe.plot.line() for dataframe in all_trajectories]
+lines = pd.DataFrame(dict(forecast=computed, y=y))
+all_graph = [dcc.Graph(figure=line) for line in figs]
+#fig = lines.plot.line()
 
 app = dash.Dash(__name__)
-app.layout = html.Div([
-    dcc.Graph(figure=fig)
+app.layout = html.Div(
+    [
+        html.Div(dcc.Input(id='input-on-submit', type='text')),
+        html.Button('Submit', id='submit-val', n_clicks=0),
+        dcc.Graph(id="figure", figure=figs[0])
 ])
 
+@app.callback(
+    Output('figure', 'figure'),
+    Input('submit-val', 'n_clicks'),
+    State('input-on-submit', 'value')
+)
+def update_output(n_clicks, value):
+    return figs[int(value)]
 
 if __name__ == '__main__':
     app.run_server(debug=False)

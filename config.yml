@@ -11,7 +11,7 @@ simulations:
   - tags: ["zero hop", "forecast=2", "spatio-gru"]
     name: "spatio-temporal-GRU"
     description: "Learning process of the spatio temporal GRU model with no communication"
-    module: &sequential "project.model.sequential"
+    module: &sequential "model.sequential"
     class_name: &stgru "SpatioTemporalConvolutionGru"
     args: &base
       - &input_feature 1
@@ -32,7 +32,7 @@ simulations:
     class_name: &gnn "SpatialGNN"
     args: *base
 
-  - tags: ["zero hop", "forecast=2", "spatio"]
+  - tags: ["zero hop", "forecast=2", "temporal"]
     name: "temporal"
     description: "Learning process of the temporal model (GRU) "
     module: *sequential
@@ -49,7 +49,7 @@ simulations:
   - tags: ["zero hop", "forecast=2", "linear"]
     name: "temporal-and-spatial"
     description: "Learning process of a spatial model (GCN) with a RNN stacked on top of it (GRU)"
-    module: &linear_module "project.model.linear"
+    module: &linear_module "model.linear"
     class_name: &linear "Linear"
     args: *base
 
@@ -120,7 +120,7 @@ simulations:
     class_name: *gnn
     args: *base_forecast_three
 
-  - tags: ["zero hop", "forecast=3", "spatio"]
+  - tags: ["zero hop", "forecast=3", "temporal"]
     name: "temporal"
     description: "Learning process of the temporal model (GRU) "
     module: *sequential
@@ -208,7 +208,7 @@ simulations:
     class_name: *gnn
     args: *base_forecast_five
 
-  - tags: ["zero hop", "forecast=5", "spatio"]
+  - tags: ["zero hop", "forecast=5", "temporal"]
     name: "temporal"
     description: "Learning process of the temporal model (GRU) "
     module: *sequential

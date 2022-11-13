@@ -67,12 +67,7 @@ with open(args.config) as file:  # todo add as parameter
             max_epochs=args.max_epochs or metadata['max_epochs']
         )
         train, validation = GraphDatasetIterator(torch_graph_train[:1]), GraphDatasetIterator(torch_graph_validation[:1])
-        lr_finder = trainer.tuner.lr_find(
-            network,
-            GraphDatasetIterator(torch_graph_train[:1]),
-            GraphDatasetIterator(torch_graph_validation[:1]),
-            mode="linear"
-        )
+        lr_finder = trainer.tuner.lr_find(network, train, validation, mode="linear")
         del train, validation
         train, validation = GraphDatasetIterator(torch_graph_train), GraphDatasetIterator(torch_graph_validation)
         new_lr = lr_finder.suggestion()
@@ -81,4 +76,4 @@ with open(args.config) as file:  # todo add as parameter
         print("tuning ...")
         trainer.fit(network, train, validation)
         neptune_logger.finalize("success")
-        del neptune_logger, loader.data, loader, network, trainer
+        del neptune_logger, loader.data, loader, network, trainer, train, validation

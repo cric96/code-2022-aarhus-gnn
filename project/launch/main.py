@@ -15,7 +15,8 @@ with open(args.config) as file:
         metadata['accelerator'] = args.accelerator or metadata.get('accelerator')
         metadata['data_size'] = args.data_size or metadata.get('data_size')
         metadata["data_path"] = args.data_path or metadata.get("data_path")
-        metadata['max_epochs']= args.max_epochs or metadata.get('max_epochs')
+        metadata['max_epochs'] = args.max_epochs or metadata.get('max_epochs')
+        metadata['logger'] = args.logger_active or metadata.get("logger_active") or True
         single_configuration = {
             'metadata': metadata,
             'simulation': simulation
@@ -23,5 +24,5 @@ with open(args.config) as file:
         file = open("dump.yml", "w")
         yaml.dump(single_configuration, file)
         file.close()
-        os.system("python single_run.py dump.yml")
+        os.system("python project/launch/single_run.py dump.yml")
 os.remove("dump.yml")

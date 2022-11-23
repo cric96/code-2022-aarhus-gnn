@@ -1,14 +1,12 @@
 
-from pytorch_lightning.loggers import NeptuneLogger
+import argparse
+from pydoc import locate
+
+import pytorch_lightning as pl
+import yaml
 from data.loader import PhenomenaDataLoader, GraphDatasetIterator
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
-import pytorch_lightning as pl
-import os
-import yaml
-import tempfile
-from pydoc import locate
-import argparse
-from input_manager import configure_arg_parser
+from pytorch_lightning.loggers import NeptuneLogger
 
 parser = argparse.ArgumentParser(description='Evaluation of neural model')
 parser.add_argument('config', metavar='config path', type=str, help='The path of the configuration file')
@@ -39,13 +37,13 @@ with open(args.config) as file:
     init = locate(full_classpath)
     network = init(*simulation['args'])
 
-    neptune_logger = NeptuneLogger(
+    logger = NeptuneLogger(
         api_key="eyJhcGlfYWRkcmVzcyI6Imh0dHBzOi8vYXBwLm5lcHR1bmUuYWkiLCJhcGlfdXJsIjoiaHR0cHM6Ly9hcHAubmVwdHVuZS5haSIsImFwaV9rZXkiOiJkZjMyMzc3Ni0yZDc4LTQzMWMtYTIzMi0wMDVlMDU5MWRiMDEifQ==",
         project="PS-Lab/gnn-forecast",
         name=simulation['name'],
         description=simulation['description'],
         tags=simulation['tags']
-    )
+    ) if metadata['logger_active'] else None
 
     early_stop_callback = EarlyStopping(
         monitor='val_loss',
@@ -54,12 +52,12 @@ with open(args.config) as file:
         verbose=True,
         mode='min'
     )
-
+    print(logger)
     trainer = pl.Trainer(
         callbacks=[early_stop_callback],
         accelerator=metadata['accelerator'],
         devices=1,
-        logger=neptune_logger,
+        logger=logger,
         max_epochs=metadata['max_epochs']
     )
     train, validation = GraphDatasetIterator(torch_graph_train[:1]), GraphDatasetIterator(torch_graph_validation[:1])
@@ -69,4 +67,4 @@ with open(args.config) as file:
     network.hparams.learning_rate = new_lr
     print("tuning ...")
     trainer.fit(network, train, validation)
-    neptune_logger.finalize("success")
+    logger.finalize("success") if metadata['logger_active'] else None

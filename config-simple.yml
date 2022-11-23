@@ -1,16 +1,16 @@
 metadata:
-  max_epochs: 200
-  data_path: "../../data/raw/"
+  max_epochs: 1
+  data_path: "./tests/snapshots/subset/"
   accelerator: "cpu"
-  data_size: 10
-
+  data_size: 4
+  logger_active: false
 simulations:
 # FORECAST SIZE = 2
 ## NO HOP
   - tags: ["zero hop", "forecast=2", "spatio-gru"]
     name: "spatio-temporal-GRU"
     description: "Learning process of the spatio temporal GRU model with no communication"
-    module: &sequential "project.model.sequential"
+    module: &sequential "model.sequential"
     class_name: &stgru "SpatialPlusTemporal"
     args: &base
       - &input_feature 1

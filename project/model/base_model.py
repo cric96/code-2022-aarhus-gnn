@@ -22,12 +22,12 @@ class BaseSpatioTemporal(ABC, pl.LightningModule):
 
     def training_step(self, batch, batch_idx) -> MetricCollection:
         loss = self.__simulation_pass__(batch)
-        self.log("training_loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        self.log("training_loss", loss.item(), on_step=True, on_epoch=True, prog_bar=True, logger=True)
         return loss
 
     def validation_step(self, batch, batch_idx) -> MetricCollection:
         loss = self.__simulation_pass__(batch)
-        self.log("val_loss", loss, on_step=False, on_epoch=True, prog_bar=True)
+        self.log("val_loss", loss.item(), on_step=False, on_epoch=True, prog_bar=True)
         return loss
 
 

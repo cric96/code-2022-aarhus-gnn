@@ -10,11 +10,12 @@ with open(args.config) as file:
     metadata = configuration['metadata']
     simulations = configuration['simulations']
     for simulation in simulations:
-        metadata['min_delta'] = metadata['min_delta'] or args.min_delta or 0.00001
-        metadata['patience'] = metadata['patience'] or args.patience or 2
-        metadata['accelerator'] = args.accelerator or metadata['accelerator']
-        metadata['data_size'] = args.data_size or metadata['data_size']
-        metadata["data_path"] = args.data_path or metadata["data_path"]
+        metadata['min_delta'] = args.min_delta or metadata.get('min_delta') or 0.00001
+        metadata['patience'] = args.patience or metadata.get('patience')  or 2
+        metadata['accelerator'] = args.accelerator or metadata.get('accelerator')
+        metadata['data_size'] = args.data_size or metadata.get('data_size')
+        metadata["data_path"] = args.data_path or metadata.get("data_path")
+        metadata['max_epochs']= args.max_epochs or metadata.get('max_epochs')
         single_configuration = {
             'metadata': metadata,
             'simulation': simulation
